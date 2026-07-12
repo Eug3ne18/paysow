@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Cash Out - Paysow</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments/nav :: nav}"></div>
+
+<div class="page">
+    <div class="card">
+        <h2>➖ Cash Out</h2>
+        <p style="color:#6b7280;font-size:14px;">
+            Current balance: ₱ <span th:text="${#numbers.formatDecimal(user.walletBalance, 1, 'COMMA', 2, 'POINT')}">0.00</span>
+        </p>
+
+        <div class="alert alert-error" th:if="${error}" th:text="${error}"></div>
+        <div class="alert alert-success" th:if="${success}" th:text="${success}"></div>
+
+        <form th:action="@{/cashout}" method="post">
+            <label>Recipient Phone Number</label>
+            <input type="tel" name="destinationPhone" placeholder="09181234567" required>
+
+            <label>Amount to Send (₱)</label>
+            <input type="number" name="amount" min="1" step="0.01" placeholder="200.00" required>
+
+            <button type="submit" style="width:100%;">Cash Out</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

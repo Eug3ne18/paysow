@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - Paysow</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments/nav :: nav}"></div>
+
+<div class="page-wide">
+    <div class="balance-hero">
+        <div class="label">Hi, <span th:text="${user.fullName}">Name</span> 👋</div>
+        <div class="label" style="margin-top:10px;">Wallet Balance</div>
+        <div class="amount">₱ <span th:text="${#numbers.formatDecimal(user.walletBalance, 1, 'COMMA', 2, 'POINT')}">0.00</span></div>
+        <div class="quick-actions">
+            <a href="/cashin">➕ Cash In</a>
+            <a href="/cashout">➖ Cash Out</a>
+            <a href="/savings">🏦 Savings</a>
+            <a href="/history">📜 History</a>
+        </div>
+    </div>
+
+    <div class="stat-grid">
+        <div class="stat-box">
+            <div class="label">Savings Balance</div>
+            <div class="value">₱ <span th:text="${#numbers.formatDecimal(user.savingsBalance, 1, 'COMMA', 2, 'POINT')}">0.00</span></div>
+        </div>
+        <div class="stat-box">
+            <div class="label">Phone Number</div>
+            <div class="value" style="font-size:16px;" th:text="${user.phoneNumber}">0917...</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Recent Activity</h2>
+        <table th:if="${!recentTransactions.isEmpty()}">
+            <thead>
+            <tr><th>Description</th><th>Type</th><th>Amount</th><th>Date</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="txn : ${recentTransactions}">
+                <td th:text="${txn.description}">Desc</td>
+                <td>
+                    <span class="badge"
+                          th:classappend="${txn.typeLabel == 'CASH IN' or txn.typeLabel == 'SAVINGS OUT'} ? 'badge-in' : (${txn.typeLabel == 'CASH OUT'} ? 'badge-out' : 'badge-savings')"
+                          th:text="${txn.typeLabel}">TYPE</span>
+                </td>
+                <td th:text="${'₱ ' + #numbers.formatDecimal(txn.amount, 1, 'COMMA', 2, 'POINT')}">₱0.00</td>
+                <td th:text="${#temporals.format(txn.timestamp, 'MMM dd, yyyy hh:mm a')}">Date</td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="empty-state" th:if="${recentTransactions.isEmpty()}">No transactions yet. Try cashing in!</div>
+        <a class="btn btn-secondary" href="/history">View Full History</a>
+    </div>
+</div>
+</body>
+</html>
