@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Paysow — Sign Up</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f6f8f9;
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      background: #ffffff; border: 1px solid #e5e8eb;
+      border-radius: 18px; padding: 38px 34px;
+      width: 100%; max-width: 400px;
+      box-shadow: 0 8px 30px rgba(16,24,40,0.05);
+    }
+    .logo { text-align: center; margin-bottom: 24px; }
+    .logo .leaf { font-size: 1.4rem; }
+    .logo h1 { font-size: 1.3rem; font-weight: 800; color: #1a1a1a; display: inline-flex; align-items: center; gap: 6px; }
+    .logo h1 span { color: #16a34a; }
+    .logo p { color: #9ca3af; font-size: 0.8rem; margin-top: 5px; }
+    label { font-size: 0.78rem; font-weight: 600; color: #6b7280; display: block; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.4px; }
+    .input-wrap { margin-bottom: 14px; }
+    input {
+      width: 100%; padding: 12px 14px;
+      background: #fff; border: 1.5px solid #e5e8eb;
+      border-radius: 10px; font-size: 0.9rem; color: #1a1a1a;
+      outline: none; transition: border-color 0.2s; font-family: inherit;
+    }
+    input:focus { border-color: #16a34a; }
+    input::placeholder { color: #9ca3af; }
+    button {
+      width: 100%; padding: 13px;
+      background: #16a34a;
+      color: #fff; border: none; border-radius: 10px;
+      font-size: 0.96rem; font-weight: 700; cursor: pointer;
+      font-family: inherit; transition: opacity 0.2s, transform 0.1s;
+      margin-top: 4px;
+    }
+    button:hover { opacity: 0.92; transform: translateY(-1px); }
+    .msg { margin-top: 12px; text-align: center; font-size: 0.85rem; padding: 10px 14px; border-radius: 8px; }
+    .msg.error { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+    .msg.success { background: #eafbef; color: #15803d; border: 1px solid #bce8c7; }
+    .footer-link { text-align: center; margin-top: 18px; font-size: 0.85rem; color: #6b7280; }
+    .footer-link a { color: #16a34a; font-weight: 600; text-decoration: none; }
+    .pin-hint { font-size: 0.75rem; color: #9ca3af; margin-top: -8px; margin-bottom: 14px; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">
+    <h1><span class="leaf">🍃</span>Pay<span>sow</span></h1>
+    <p>Create your free account</p>
+  </div>
+  <label>Full Name</label>
+  <div class="input-wrap">
+    <input type="text" id="fullName" placeholder="Juan dela Cruz" />
+  </div>
+  <label>Email Address</label>
+  <div class="input-wrap">
+    <input type="email" id="email" placeholder="your@email.com" />
+  </div>
+  <label>Phone Number</label>
+  <div class="input-wrap">
+    <input type="tel" id="phone" placeholder="09171234567" />
+  </div>
+  <label>PIN (4-6 digits)</label>
+  <div class="input-wrap">
+    <input type="password" id="pin" placeholder="Enter PIN" maxlength="6" inputmode="numeric" />
+  </div>
+  <p class="pin-hint">Use 4 to 6 numeric digits</p>
+  <label>Confirm PIN</label>
+  <div class="input-wrap">
+    <input type="password" id="confirmPin" placeholder="Confirm PIN" maxlength="6" inputmode="numeric" />
+  </div>
+  <button onclick="register()">Create Account</button>
+  <div class="msg" id="msg" style="display:none"></div>
+  <div class="footer-link">Already have an account? <a href="/">Login</a></div>
+</div>
+<script>
+async function register() {
+  const fullName = document.getElementById('fullName').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  const pin = document.getElementById('pin').value;
+  const confirmPin = document.getElementById('confirmPin').value;
+  const msg = document.getElementById('msg');
+  msg.style.display = 'none';
+  if (!fullName || !email || !phone || !pin) {
+    msg.className='msg error'; msg.textContent='All fields are required.'; msg.style.display='block'; return;
+  }
+  if (!/^\d{4,6}$/.test(pin)) {
+    msg.className='msg error'; msg.textContent='PIN must be 4-6 digits.'; msg.style.display='block'; return;
+  }
+  if (pin !== confirmPin) {
+    msg.className='msg error'; msg.textContent='PINs do not match.'; msg.style.display='block'; return;
+  }
+  const fd = new FormData();
+  fd.append('fullName', fullName);
+  fd.append('email', email);
+  fd.append('phone', phone);
+  fd.append('pin', pin);
+  const r = await fetch('/api/register', { method: 'POST', body: fd });
+  const d = await r.json();
+  if (d.success) {
+    msg.className='msg success'; msg.textContent='✓ Account created! Redirecting to login...'; msg.style.display='block';
+    setTimeout(() => window.location.href = '/', 1200);
+  } else {
+    msg.className='msg error'; msg.textContent = d.message || 'Registration failed.'; msg.style.display='block';
+  }
+}
+</script>
+</body>
+</html>
